@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Financial Manager{% endblock %}</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.replit.com/agent/bootstrap-agent-dark-theme.min.css" rel="stylesheet">
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <!-- Futuristic Network Background -->
+    <div class="floating-shapes">
+        <div class="floating-shape"></div>
+        <div class="floating-shape"></div>
+        <div class="floating-shape"></div>
+        <div class="floating-shape"></div>
+        <div class="floating-shape"></div>
+        <div class="floating-shape"></div>
+    </div>
+    
+    <!-- Navigation -->
+   <!-- Glassy Navbar -->
+<!-- Full-Width Glassy Navbar -->
+<!-- Full-Width Glassy Navbar with Buttons & Hover Effect -->
+<nav style="
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border-radius: 0 0 16px 16px;
+    padding: 12px 30px;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+" class="navbar navbar-expand-lg navbar-dark">
+  <div class="container-fluid">
+    <!-- Logo -->
+    <a class="navbar-brand fw-bold" href="{{ url_for('index') }}" style="
+        font-size: 26px;
+        color: #ffffff;
+        letter-spacing: 1px;
+    ">
+      <span style="color: #00f0ff;">AI-Powered </span>Budget Planner 
+    </a>
+
+    <!-- Toggler -->
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <!-- Links -->
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        {% if session.user_id %}
+        <li class="nav-item">
+          <a class="nav-link text-white nav-hover" href="{{ url_for('dashboard') }}">Dashboard</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link text-white nav-hover" href="{{ url_for('transactions') }}">Transactions</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link text-white nav-hover" href="{{ url_for('budget') }}">Budget</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link text-white nav-hover" href="{{ url_for('forecast') }}">AI Forecast</a>
+        </li>
+        {% endif %}
+      </ul>
+
+      <ul class="navbar-nav">
+        {% if session.user_id %}
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle text-white nav-hover" href="#" role="button" data-bs-toggle="dropdown">
+            👤 {{ session.username }}
+          </a>
+          <ul class="dropdown-menu dropdown-menu-end">
+            <li><a class="dropdown-item" href="{{ url_for('logout') }}">Logout</a></li>
+          </ul>
+        </li>
+        {% else %}
+        <li class="nav-item">
+          <a class="btn btn-outline-light me-2" style="border-color: #00f0ff; color: #00f0ff;"
+             href="{{ url_for('login') }}">Login</a>
+        </li>
+        <li class="nav-item">
+          <a class="btn btn-primary" style="background-color: #00f0ff; border: none; color: white;"
+             href="{{ url_for('register') }}">Sign Up</a>
+        </li>
+        {% endif %}
+      </ul>
+    </div>
+  </div>
+</nav>
+    <!-- Flash Messages -->
+    <div class="container mt-3">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                <div class="alert alert-{{ 'danger' if category == 'error' else category }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+    </div>
+
+    <!-- Main Content -->
+    <main class="container my-4">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <!-- <footer class="bg-dark text-light text-center py-3 mt-5">
+        <div class="container">
+            <p class="mb-0">AI POWERED BUDGET PLANNER</p>
+        </div>
+    </footer> -->
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Custom JS -->
+    <script src="{{ url_for('static', filename='js/charts.js') }}"></script>
+    
+    {% block scripts %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,324 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Financial Manager{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2>Financial Dashboard</h2>
+            <span class="badge bg-primary fs-6">{{ current_month }}</span>
+        </div>
+    </div>
+</div>
+
+<!-- Enhanced Summary Cards -->
+<div class="row g-4 mb-4">
+    <div class="col-lg-3 col-md-6">
+        <div class="card text-center h-100 summary-card income-card">
+            <div class="card-body">
+                <div class="card-icon mb-3">💰</div>
+                <h5 class="card-title">Monthly Income</h5>
+                <h2 class="gradient-text">₹{{ "%.2f"|format(monthly_income) }}</h2>
+                <div class="card-trend">
+                    <small class="text-muted">This month</small>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-3 col-md-6">
+        <div class="card text-center h-100 summary-card expense-card">
+            <div class="card-body">
+                <div class="card-icon mb-3">💸</div>
+                <h5 class="card-title">Monthly Expenses</h5>
+                <h2 class="gradient-text">₹{{ "%.2f"|format(monthly_expenses) }}</h2>
+                <div class="card-trend">
+                    <small class="text-muted">{{ total_transactions }} transactions</small>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-3 col-md-6">
+        <div class="card text-center h-100 summary-card balance-card">
+            <div class="card-body">
+                <div class="card-icon mb-3">{% if monthly_income - monthly_expenses >= 0 %}💎{% else %}⚠️{% endif %}</div>
+                <h5 class="card-title">Net Balance</h5>
+                <h2 class="gradient-text">
+                    ₹{{ "%.2f"|format(monthly_income - monthly_expenses) }}
+                </h2>
+                <div class="card-trend">
+                    <small class="text-muted">
+                        {% if monthly_income - monthly_expenses >= 0 %}Positive{% else %}Deficit{% endif %}
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-3 col-md-6">
+        <div class="card text-center h-100 summary-card velocity-card">
+            <div class="card-body">
+                <div class="card-icon mb-3">📊</div>
+                <h5 class="card-title">Avg Transaction</h5>
+                <h2 class="gradient-text">₹{{ "%.2f"|format(avg_transaction_amount) }}</h2>
+                <div class="card-trend">
+                    <small class="text-muted">{{ "%.1f"|format(spending_velocity) }} per day</small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Charts Row -->
+<div class="row g-4 mb-4">
+    <!-- Monthly Trend Chart -->
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">📈 Financial Trend Analysis</h5>
+                <div class="btn-group btn-group-sm" role="group">
+                    <input type="radio" class="btn-check" name="chartPeriod" id="period6" checked>
+                    <label class="btn btn-outline-primary" for="period6">6M</label>
+                    
+                    <input type="radio" class="btn-check" name="chartPeriod" id="period12">
+                    <label class="btn btn-outline-primary" for="period12">12M</label>
+                </div>
+            </div>
+            <div class="card-body">
+                <canvas id="trendChart" height="120"></canvas>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Category Expenses Chart -->
+    <div class="col-lg-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">💰 Current Month Breakdown</h5>
+            </div>
+            <div class="card-body">
+                {% if category_expenses %}
+                <canvas id="categoryChart" height="250"></canvas>
+                {% else %}
+                <div class="text-center text-muted py-4">
+                    <p>No expense data available</p>
+                    <a href="{{ url_for('transactions') }}" class="btn btn-sm btn-outline-primary">Add Transactions</a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Transactions -->
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Recent Transactions</h5>
+                <a href="{{ url_for('transactions') }}" class="btn btn-sm btn-outline-primary">View All</a>
+            </div>
+            <div class="card-body">
+                {% if recent_transactions %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Description</th>
+                                <th>Category</th>
+                                <th>Type</th>
+                                <th class="text-end">Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for transaction in recent_transactions %}
+                            <tr>
+                                <td>{{ transaction.date.strftime('%m/%d/%Y') }}</td>
+                                <td>{{ transaction.description or 'No description' }}</td>
+                                <td><span class="badge bg-secondary">{{ transaction.category }}</span></td>
+                                <td>
+                                    <span class="badge {% if transaction.transaction_type == 'income' %}bg-success{% else %}bg-danger{% endif %}">
+                                        {{ transaction.transaction_type.title() }}
+                                    </span>
+                                </td>
+                                <td class="text-end {% if transaction.transaction_type == 'income' %}text-success{% else %}text-danger{% endif %}">
+                                    {% if transaction.transaction_type == 'income' %}+{% else %}-{% endif %}₹{{ "%.2f"|format(transaction.amount) }}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="text-center text-muted py-4">
+                    <p>No transactions yet</p>
+                    <a href="{{ url_for('transactions') }}" class="btn btn-primary">Add Your First Transaction</a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Professional Chart Configuration
+Chart.defaults.color = 'rgba(255, 255, 255, 0.9)';
+Chart.defaults.borderColor = 'rgba(255, 255, 255, 0.15)';
+Chart.defaults.font.family = 'Inter, system-ui, sans-serif';
+Chart.defaults.font.weight = '500';
+
+const trendData = {{ monthly_trends | tojson }};
+const categoryData = {{ category_expenses | tojson }};
+const categoryTrendsData = {{ category_trends | tojson }};
+
+// Dark Professional Color Palette
+const professionalColors = {
+    primary: ['#00d4ff', '#1dd1ff', '#3acedf', '#57ccbf'],
+    success: ['#00ff88', '#20ff99', '#40ffaa', '#60ffbb'],
+    danger: ['#ff3366', '#ff4d77', '#ff6688', '#ff8099'],
+    warning: ['#ffaa00', '#ffb41a', '#ffbe33', '#ffc84d'],
+    info: ['#8c7ae6', '#9688ea', '#a096ee', '#aaa4f2'],
+    accent: ['#ff6b6b', '#ff7979', '#ff8787', '#ff9595'],
+    gradient: [
+        'linear-gradient(135deg, #00d4ff 0%, #8c7ae6 100%)',
+        'linear-gradient(135deg, #ff6b6b 0%, #00ff88 100%)',
+        'linear-gradient(135deg, #ffaa00 0%, #ff3366 100%)',
+        'linear-gradient(135deg, #8c7ae6 0%, #00d4ff 100%)',
+        'linear-gradient(135deg, #00ff88 0%, #ffaa00 100%)',
+        'linear-gradient(135deg, #ff3366 0%, #8c7ae6 100%)'
+    ]
+};
+
+// Monthly Trend Chart with period toggle
+let trendChart;
+
+function createTrendChart(period = 6) {
+    const ctx = document.getElementById('trendChart').getContext('2d');
+    
+    if (trendChart) {
+        trendChart.destroy();
+    }
+    
+    const displayData = trendData.slice(-period);
+    
+    trendChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: displayData.map(d => d.short_month),
+            datasets: [{
+                label: 'Income',
+                data: displayData.map(d => d.income),
+                borderColor: '#10b981',
+                backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                tension: 0.4,
+                fill: true,
+                pointBackgroundColor: '#10b981',
+                pointBorderColor: '#fff',
+                pointBorderWidth: 2,
+                pointRadius: 6
+            }, {
+                label: 'Expenses',
+                data: displayData.map(d => d.expenses),
+                borderColor: '#ef4444',
+                backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                tension: 0.4,
+                fill: true,
+                pointBackgroundColor: '#ef4444',
+                pointBorderColor: '#fff',
+                pointBorderWidth: 2,
+                pointRadius: 6
+            }, {
+                label: 'Savings',
+                data: displayData.map(d => d.savings),
+                borderColor: '#00d4ff',
+                backgroundColor: 'rgba(0, 212, 255, 0.1)',
+                tension: 0.4,
+                fill: true,
+                pointBackgroundColor: '#00d4ff',
+                pointBorderColor: '#fff',
+                pointBorderWidth: 2,
+                pointRadius: 6
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'top',
+                    labels: {
+                        usePointStyle: true,
+                        padding: 20
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    grid: {
+                        color: 'rgba(255, 255, 255, 0.1)'
+                    },
+                    ticks: {
+                        callback: function(value) {
+                            return '₹' + value.toLocaleString();
+                        }
+                    }
+                },
+                x: {
+                    grid: {
+                        color: 'rgba(255, 255, 255, 0.1)'
+                    }
+                }
+            },
+            interaction: {
+                intersect: false,
+                mode: 'index'
+            }
+        }
+    });
+}
+
+// Category Chart
+if (Object.keys(categoryData).length > 0) {
+    const categoryCtx = document.getElementById('categoryChart').getContext('2d');
+    
+    new Chart(categoryCtx, {
+        type: 'doughnut',
+        data: {
+            labels: Object.keys(categoryData),
+            datasets: [{
+                data: Object.values(categoryData),
+                backgroundColor: professionalColors.primary.concat(professionalColors.success, professionalColors.warning, professionalColors.info),
+                borderWidth: 2,
+                borderColor: 'rgba(255, 255, 255, 0.1)'
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        padding: 15,
+                        usePointStyle: true
+                    }
+                }
+            }
+        }
+    });
+}
+
+// Initialize with 6 months
+createTrendChart(6);
+
+// Period toggle listeners
+document.getElementById('period6').addEventListener('change', () => createTrendChart(6));
+document.getElementById('period12').addEventListener('change', () => createTrendChart(12));
+</script>
+{% endblock %}

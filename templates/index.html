@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+
+{% block title %}Welcome - Financial Manager{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-10">
+
+        <!-- Hero Section -->
+        <section class="text-center mb-5" aria-labelledby="hero-heading">
+            <h1 id="hero-heading" class="display-4 mb-4">
+                <span class="text-primary">Smart Financial Management</span><br>
+                <span class="text-muted">with AI-Powered Insights</span>
+            </h1>
+            <p class="lead mb-4">
+                Take control of your finances with intelligent expense tracking, budgeting, and ML-powered forecasting.
+            </p>
+            <div class="d-flex gap-3 justify-content-center">
+                <a href="{{ url_for('register') }}" class="btn btn-primary btn-lg">Get Started</a>
+                <a href="{{ url_for('login') }}" class="btn btn-outline-secondary btn-lg">Login</a>
+            </div>
+        </section>
+
+        <!-- Features Grid -->
+        <section class="row g-4 mb-5" aria-labelledby="features-heading">
+            <h2 id="features-heading" class="visually-hidden">Features</h2>
+
+            <div class="col-md-6 col-lg-3">
+                <div class="card h-100 text-center">
+                    <div class="card-body">
+                        <i class="bi bi-bar-chart-line display-6 text-primary mb-3"></i>
+                        <h5 class="card-title">Smart Dashboard</h5>
+                        <p class="card-text">Visual insights into your spending patterns with interactive charts and analytics.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-3">
+                <div class="card h-100 text-center">
+                    <div class="card-body">
+                        <i class="bi bi-credit-card display-6 text-success mb-3"></i>
+                        <h5 class="card-title">Expense Tracking</h5>
+                        <p class="card-text">Easily track income and expenses with automatic categorization and detailed records.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-3">
+                <div class="card h-100 text-center">
+                    <div class="card-body">
+                        <i class="bi bi-bullseye display-6 text-warning mb-3"></i>
+                        <h5 class="card-title">Budget Planning</h5>
+                        <p class="card-text">Set monthly budgets and get alerts when you're approaching your limits.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-3">
+                <div class="card h-100 text-center">
+                    <div class="card-body">
+                        <i class="bi bi-robot display-6 text-info mb-3"></i>
+                        <h5 class="card-title">AI Forecasting</h5>
+                        <p class="card-text">ML-powered expense predictions and personalized financial tips.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- How It Works -->
+        <section class="text-center mb-5" aria-labelledby="how-heading">
+            <h2 id="how-heading" class="mb-4">How It Works</h2>
+            <div class="row g-4">
+                <div class="col-lg-4">
+                    <div class="d-flex justify-content-center mb-3">
+                        <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
+                            <strong>1</strong>
+                        </div>
+                    </div>
+                    <h5>Track Your Transactions</h5>
+                    <p class="text-muted">Add your income and expenses with detailed categorization for better insights.</p>
+                </div>
+
+                <div class="col-lg-4">
+                    <div class="d-flex justify-content-center mb-3">
+                        <div class="bg-success text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
+                            <strong>2</strong>
+                        </div>
+                    </div>
+                    <h5>Set Smart Budgets</h5>
+                    <p class="text-muted">Create category-wise budgets and monitor your progress with visual indicators.</p>
+                </div>
+
+                <div class="col-lg-4">
+                    <div class="d-flex justify-content-center mb-3">
+                        <div class="bg-info text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
+                            <strong>3</strong>
+                        </div>
+                    </div>
+                    <h5>Get AI Insights</h5>
+                    <p class="text-muted">Receive personalized forecasts and recommendations to improve your financial health.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- CTA Section -->
+        
+    </div>
+</div>
+{% endblock %}
